@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bekijk Producten</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 15px;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .product-price {
+            color: #e91e63;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .product-category {
+            display: inline-block;
+            background-color: #f1f1f1;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .product-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .product-stock {
+            font-size: 14px;
+            color: #333;
+        }
+        .product-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .status-active {
+            background-color: #4caf50;
+            color: white;
+        }
+        .status-inactive {
+            background-color: #f44336;
+            color: white;
+        }
+        .actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        .btn-primary {
+            background-color: #2196f3;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-success {
+            background-color: #4caf50;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .no-products {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Producten Beheren</h1>
+    
+    <div class="actions">
+        <button id="add-product-btn" class="btn btn-primary">Product Toevoegen</button>
+        <button id="clear-products-btn" class="btn btn-danger">Alle Producten Verwijderen</button>
+        <button id="reset-products-btn" class="btn btn-success">Reset naar Standaard Producten</button>
+    </div>
+    
+    <div id="products-container" class="product-grid">
+        <!-- Producten worden hier dynamisch geladen -->
+    </div>
+    
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">Product Toevoegen</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                
+                <div class="form-group">
+                    <label for="product-name">Productnaam</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-price">Prijs (€)</label>
+                    <input type="number" id="product-price" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-category">Categorie</label>
+                    <select id="product-category" required>
+                        <option value="kleding">Kleding</option>
+                        <option value="accessoires">Accessoires</option>
+                        <option value="digitaal">Digitaal</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-stock">Voorraad</label>
+                    <input type="number" id="product-stock" min="0" step="1" value="10">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="unlimited-stock">
+                        <label for="unlimited-stock">Onbeperkte voorraad</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-description">Beschrijving</label>
+                    <textarea id="product-description" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-image">Afbeelding URL</label>
+                    <input type="text" id="product-image" placeholder="https://example.com/image.jpg">
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-status">Status</label>
+                    <select id="product-status" required>
+                        <option value="active">Actief</option>
+                        <option value="inactive">Inactief</option>
+                    </select>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="cancel-btn">Annuleren</button>
+                    <button type="submit" class="btn btn-success" id="save-btn">Opslaan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Default products
+            const defaultProducts = [
+                {
+                    id: 1,
+                    name: 'VoiceGuy T-shirt',
+                    price: 24.99,
+                    category: 'kleding',
+                    stock: 25,
+                    status: 'active',
+                    image: 'https://via.placeholder.com/400x300/333333/ff33cc?text=VoiceGuy+T-shirt',
+                    description: 'Een comfortabel T-shirt met het VoiceGuy logo.'
+                },
+                {
+                    id: 2,
+                    name: 'VoiceGuy Hoodie',
+                    price: 49.99,
+                    category: 'kleding',
+                    stock: 15,
+                    status: 'active',
+                    image: 'https://via.placeholder.com/400x300/333333/ff33cc?text=VoiceGuy+Hoodie',
+                    description: 'Een warme hoodie met het VoiceGuy logo.'
+                },
+                {
+                    id: 3,
+                    name: 'VoiceGuy Mok',
+                    price: 14.99,
+                    category: 'accessoires',
+                    stock: 30,
+                    status: 'active',
+                    image: 'https://via.placeholder.com/400x300/333333/00ff99?text=VoiceGuy+Mok',
+                    description: 'Een keramische mok met het VoiceGuy logo.'
+                },
+                {
+                    id: 4,
+                    name: 'VoiceGuy Pet',
+                    price: 19.99,
+                    category: 'accessoires',
+                    stock: 20,
+                    status: 'active',
+                    image: 'https://via.placeholder.com/400x300/333333/00ff99?text=VoiceGuy+Pet',
+                    description: 'Een stijlvolle pet met het VoiceGuy logo.'
+                },
+                {
+                    id: 5,
+                    name: 'Stream Emotes Pack',
+                    price: 9.99,
+                    category: 'digitaal',
+                    stock: -1, // Unlimited
+                    status: 'active',
+                    image: 'https://via.placeholder.com/400x300/333333/ff66cc?text=Stream+Emotes',
+                    description: 'Een set van 10 unieke emotes voor je stream.'
+                },
+                {
+                    id: 6,
+                    name: 'Stream Overlay Pack',
+                    price: 14.99,
+                    category: 'digitaal',
+                    stock: -1, // Unlimited
+                    status: 'active',
+                    image: 'https://via.placeholder.com/400x300/333333/ff66cc?text=Stream+Overlay',
+                    description: 'Een professionele stream overlay in VoiceGuy stijl.'
+                }
+            ];
+            
+            // Get products from localStorage
+            let products = JSON.parse(localStorage.getItem('voiceguy_products')) || [];
+            
+            // Load products
+            loadProducts();
+            
+            // Add event listeners
+            document.getElementById('add-product-btn').addEventListener('click', function() {
+                showProductModal();
+            });
+            
+            document.getElementById('clear-products-btn').addEventListener('click', function() {
+                if (confirm('Weet je zeker dat je alle producten wilt verwijderen?')) {
+                    localStorage.setItem('voiceguy_products', JSON.stringify([]));
+                    products = [];
+                    loadProducts();
+                    alert('Alle producten zijn verwijderd!');
+                }
+            });
+            
+            document.getElementById('reset-products-btn').addEventListener('click', function() {
+                if (confirm('Weet je zeker dat je alle producten wilt resetten naar de standaardproducten?')) {
+                    localStorage.setItem('voiceguy_products', JSON.stringify(defaultProducts));
+                    products = [...defaultProducts];
+                    loadProducts();
+                    alert('Producten zijn gereset naar standaard!');
+                }
+            });
+            
+            // Modal functionality
+            const modal = document.getElementById('product-modal');
+            const closeModal = modal.querySelector('.close-modal');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const productForm = document.getElementById('product-form');
+            const unlimitedStockCheckbox = document.getElementById('unlimited-stock');
+            const productStockInput = document.getElementById('product-stock');
+            
+            closeModal.addEventListener('click', function() {
+                hideProductModal();
+            });
+            
+            cancelBtn.addEventListener('click', function() {
+                hideProductModal();
+            });
+            
+            unlimitedStockCheckbox.addEventListener('change', function() {
+                productStockInput.disabled = this.checked;
+                if (this.checked) {
+                    productStockInput.value = '';
+                } else {
+                    productStockInput.value = '10';
+                }
+            });
+            
+            productForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveProduct();
+                hideProductModal();
+            });
+            
+            // Functions
+            function loadProducts() {
+                const productsContainer = document.getElementById('products-container');
+                productsContainer.innerHTML = '';
+                
+                if (products.length === 0) {
+                    productsContainer.innerHTML = '<div class="no-products">Geen producten gevonden. Voeg producten toe of reset naar standaard producten.</div>';
+                    return;
+                }
+                
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">€${product.price.toFixed(2).replace('.', ',')}</div>
+                            <div class="product-category">${getCategoryName(product.category)}</div>
+                            <div class="product-description">${product.description}</div>
+                            <div class="product-stock">
+                                Voorraad: ${product.stock === -1 ? 'Onbeperkt' : product.stock}
+                                <span class="product-status ${product.status === 'active' ? 'status-active' : 'status-inactive'}">
+                                    ${product.status === 'active' ? 'Actief' : 'Inactief'}
+                                </span>
+                            </div>
+                            <div class="actions" style="text-align: left; margin-top: 10px;">
+                                <button class="btn btn-primary edit-btn" data-id="${product.id}">Bewerken</button>
+                                <button class="btn btn-danger delete-btn" data-id="${product.id}">Verwijderen</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    productsContainer.appendChild(productCard);
+                    
+                    // Add event listeners to buttons
+                    const editBtn = productCard.querySelector('.edit-btn');
+                    const deleteBtn = productCard.querySelector('.delete-btn');
+                    
+                    editBtn.addEventListener('click', function() {
+                        const productId = parseInt(this.getAttribute('data-id'));
+                        editProduct(productId);
+                    });
+                    
+                    deleteBtn.addEventListener('click', function() {
+                        const productId = parseInt(this.getAttribute('data-id'));
+                        deleteProduct(productId);
+                    });
+                });
+            }
+            
+            function showProductModal(product = null) {
+                const modalTitle = document.getElementById('modal-title');
+                const productIdInput = document.getElementById('product-id');
+                const productNameInput = document.getElementById('product-name');
+                const productPriceInput = document.getElementById('product-price');
+                const productCategoryInput = document.getElementById('product-category');
+                const productStockInput = document.getElementById('product-stock');
+                const unlimitedStockCheckbox = document.getElementById('unlimited-stock');
+                const productDescriptionInput = document.getElementById('product-description');
+                const productImageInput = document.getElementById('product-image');
+                const productStatusInput = document.getElementById('product-status');
+                
+                // Reset form
+                document.getElementById('product-form').reset();
+                
+                if (product) {
+                    // Edit existing product
+                    modalTitle.textContent = 'Product Bewerken';
+                    productIdInput.value = product.id;
+                    productNameInput.value = product.name;
+                    productPriceInput.value = product.price;
+                    productCategoryInput.value = product.category;
+                    
+                    if (product.stock === -1) {
+                        unlimitedStockCheckbox.checked = true;
+                        productStockInput.disabled = true;
+                        productStockInput.value = '';
+                    } else {
+                        unlimitedStockCheckbox.checked = false;
+                        productStockInput.disabled = false;
+                        productStockInput.value = product.stock;
+                    }
+                    
+                    productDescriptionInput.value = product.description;
+                    productImageInput.value = product.image;
+                    productStatusInput.value = product.status;
+                } else {
+                    // Add new product
+                    modalTitle.textContent = 'Product Toevoegen';
+                    productIdInput.value = '';
+                    unlimitedStockCheckbox.checked = false;
+                    productStockInput.disabled = false;
+                    productStockInput.value = '10';
+                }
+                
+                // Show modal
+                modal.style.display = 'flex';
+            }
+            
+            function hideProductModal() {
+                modal.style.display = 'none';
+            }
+            
+            function saveProduct() {
+                const productId = document.getElementById('product-id').value;
+                const name = document.getElementById('product-name').value;
+                const price = parseFloat(document.getElementById('product-price').value);
+                const category = document.getElementById('product-category').value;
+                const unlimitedStock = document.getElementById('unlimited-stock').checked;
+                const stock = unlimitedStock ? -1 : parseInt(document.getElementById('product-stock').value);
+                const description = document.getElementById('product-description').value;
+                const image = document.getElementById('product-image').value || `https://via.placeholder.com/400x300/333333/ff33cc?text=${encodeURIComponent(name)}`;
+                const status = document.getElementById('product-status').value;
+                
+                if (productId) {
+                    // Update existing product
+                    const index = products.findIndex(p => p.id === parseInt(productId));
+                    
+                    if (index !== -1) {
+                        products[index] = {
+                            ...products[index],
+                            name,
+                            price,
+                            category,
+                            stock,
+                            description,
+                            image,
+                            status
+                        };
+                    }
+                } else {
+                    // Add new product
+                    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                    
+                    products.push({
+                        id: newId,
+                        name,
+                        price,
+                        category,
+                        stock,
+                        description,
+                        image,
+                        status
+                    });
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('voiceguy_products', JSON.stringify(products));
+                
+                // Reload products
+                loadProducts();
+                
+                // Show success message
+                alert(productId ? 'Product bijgewerkt!' : 'Product toegevoegd!');
+            }
+            
+            function editProduct(productId) {
+                const product = products.find(p => p.id === productId);
+                
+                if (product) {
+                    showProductModal(product);
+                }
+            }
+            
+            function deleteProduct(productId) {
+                if (confirm('Weet je zeker dat je dit product wilt verwijderen?')) {
+                    products = products.filter(p => p.id !== productId);
+                    
+                    // Save to localStorage
+                    localStorage.setItem('voiceguy_products', JSON.stringify(products));
+                    
+                    // Reload products
+                    loadProducts();
+                    
+                    // Show success message
+                    alert('Product verwijderd!');
+                }
+            }
+            
+            function getCategoryName(category) {
+                switch (category) {
+                    case 'kleding':
+                        return 'Kleding';
+                    case 'accessoires':
+                        return 'Accessoires';
+                    case 'digitaal':
+                        return 'Digitaal';
+                    default:
+                        return category;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

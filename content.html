@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content - VoiceGuy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Content Page Styles */
+        .content-page {
+            background-color: #121212;
+            color: white;
+        }
+        
+        .content-header {
+            margin-bottom: 30px;
+        }
+        
+        .content-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #ff33cc;
+        }
+        
+        .content-header p {
+            font-size: 18px;
+            color: #aaa;
+        }
+        
+        .content-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-button {
+            padding: 8px 15px;
+            background-color: #2a2a2a;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-button:hover {
+            background-color: #3a3a3a;
+        }
+        
+        .filter-button.active {
+            background-color: #ff33cc;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .content-card {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .content-image {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .content-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover .content-image img {
+            transform: scale(1.05);
+        }
+        
+        .content-type {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .content-type.video {
+            background-color: #ff3333;
+            color: white;
+        }
+        
+        .content-type.stream {
+            background-color: #33ccff;
+            color: white;
+        }
+        
+        .content-type.post {
+            background-color: #33cc33;
+            color: white;
+        }
+        
+        .content-info {
+            padding: 20px;
+        }
+        
+        .content-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .content-description {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .content-date {
+            display: flex;
+            align-items: center;
+        }
+        
+        .content-date i {
+            margin-right: 5px;
+        }
+        
+        .content-views {
+            display: flex;
+            align-items: center;
+        }
+        
+        .content-views i {
+            margin-right: 5px;
+        }
+        
+        .content-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #2a2a2a;
+        }
+        
+        .content-button {
+            padding: 8px 15px;
+            background-color: #2a2a2a;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .content-button i {
+            margin-right: 5px;
+        }
+        
+        .content-button:hover {
+            background-color: #3a3a3a;
+        }
+        
+        .content-button.primary {
+            background-color: #ff33cc;
+        }
+        
+        .content-button.primary:hover {
+            background-color: #e61eb3;
+        }
+        
+        .load-more {
+            display: block;
+            width: 200px;
+            margin: 0 auto 40px;
+            padding: 12px 20px;
+            background-color: #ff33cc;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .load-more:hover {
+            background-color: #e61eb3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 51, 204, 0.3);
+        }
+        
+        /* Featured Content */
+        .featured-content {
+            margin-bottom: 40px;
+        }
+        
+        .featured-card {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media (min-width: 768px) {
+            .featured-card {
+                flex-direction: row;
+                height: 350px;
+            }
+        }
+        
+        .featured-image {
+            flex: 1;
+            min-height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .featured-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            background-color: #ff33cc;
+            color: white;
+            padding: 8px 15px;
+            font-weight: 600;
+            border-radius: 0 5px 5px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .featured-info {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .featured-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .featured-description {
+            color: #aaa;
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            flex: 1;
+        }
+        
+        .featured-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .featured-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-filters {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="content-page">
+    <!-- Header / Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">VoiceGuy</div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="menu" id="menu">
+                <a href="index.html">Home</a>
+                <a href="live.html">Live Status</a>
+                <a href="content.html" class="active">Content</a>
+                <a href="shop.html">Shop</a>
+                <a href="chat.html">Live Chat</a>
+                <a href="profile.html">Profiel</a>
+                <a href="login-html.html">Inloggen</a>
+                <a href="register.html">Registreren</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Content Page Content -->
+    <main class="content">
+        <section class="content-header">
+            <h1>VoiceGuy Content</h1>
+            <p>Bekijk alle video's, streams en posts van VoiceGuy!</p>
+        </section>
+
+        <!-- Featured Content -->
+        <section class="featured-content">
+            <div class="featured-card">
+                <div class="featured-image">
+                    <img src="https://via.placeholder.com/800x500" alt="Featured content">
+                    <div class="featured-badge">UITGELICHT</div>
+                </div>
+                <div class="featured-info">
+                    <h2 class="featured-title">Nieuwe Game Aankondiging: Mijn Avontuur in de Wereld van Elden Ring</h2>
+                    <div class="featured-meta">
+                        <div class="content-date">
+                            <i class="far fa-calendar-alt"></i> 15 juni 2023
+                        </div>
+                        <div class="content-views">
+                            <i class="far fa-eye"></i> 12.345 weergaven
+                        </div>
+                    </div>
+                    <p class="featured-description">
+                        In deze speciale video kondig ik aan dat ik ga beginnen met een nieuwe serie over Elden Ring! 
+                        Ik zal jullie meenemen op een episch avontuur door deze uitdagende wereld, compleet met mijn 
+                        bekende stemimitaties en commentaar. Mis het niet!
+                    </p>
+                    <div class="featured-actions">
+                        <a href="#" class="content-button primary">
+                            <i class="fas fa-play"></i> Nu Bekijken
+                        </a>
+                        <a href="#" class="content-button">
+                            <i class="fas fa-share-alt"></i> Delen
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Filters -->
+        <section class="content-filters">
+            <button class="filter-button active" data-filter="all">Alles</button>
+            <button class="filter-button" data-filter="video">Video's</button>
+            <button class="filter-button" data-filter="stream">Streams</button>
+            <button class="filter-button" data-filter="post">Posts</button>
+        </section>
+
+        <!-- Content Grid -->
+        <section class="content-grid" id="content-grid">
+            <!-- Video Content -->
+            <div class="content-card" data-type="video">
+                <div class="content-image">
+                    <img src="https://via.placeholder.com/300x180" alt="Video thumbnail">
+                    <div class="content-type video">Video</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">Top 10 Stemimitaties Challenge</h3>
+                    <p class="content-description">
+                        In deze video doe ik mijn top 10 beste stemimitaties, inclusief beroemde filmkarakters en gamepersonages!
+                    </p>
+                    <div class="content-meta">
+                        <div class="content-date">
+                            <i class="far fa-calendar-alt"></i> 10 juni 2023
+                        </div>
+                        <div class="content-views">
+                            <i class="far fa-eye"></i> 8.721 weergaven
+                        </div>
+                    </div>
+                    <div class="content-actions">
+                        <a href="#" class="content-button primary">
+                            <i class="fas fa-play"></i> Bekijken
+                        </a>
+                        <a href="#" class="content-button">
+                            <i class="fas fa-share-alt"></i> Delen
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Content -->
+            <div class="content-card" data-type="stream">
+                <div class="content-image">
+                    <img src="https://via.placeholder.com/300x180" alt="Stream thumbnail">
+                    <div class="content-type stream">Stream</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">Minecraft Hardcore Survival - Dag 50</h3>
+                    <p class="content-description">
+                        We hebben de 50 dagen milestone bereikt in onze Minecraft Hardcore wereld! Kom kijken naar wat we hebben gebouwd.
+                    </p>
+                    <div class="content-meta">
+                        <div class="content-date">
+                            <i class="far fa-calendar-alt"></i> 5 juni 2023
+                        </div>
+                        <div class="content-views">
+                            <i class="far fa-eye"></i> 5.432 weergaven
+                        </div>
+                    </div>
+                    <div class="content-actions">
+                        <a href="#" class="content-button primary">
+                            <i class="fas fa-play"></i> Bekijken
+                        </a>
+                        <a href="#" class="content-button">
+                            <i class="fas fa-share-alt"></i> Delen
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Content -->
+            <div class="content-card" data-type="post">
+                <div class="content-image">
+                    <img src="https://via.placeholder.com/300x180" alt="Post thumbnail">
+                    <div class="content-type post">Post</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">Mijn Setup Tour 2023</h3>
+                    <p class="content-description">
+                        Veel mensen vroegen ernaar, dus hier is het: een complete tour van mijn gaming en streaming setup!
+                    </p>
+                    <div class="content-meta">
+                        <div class="content-date">
+                            <i class="far fa-calendar-alt"></i> 1 juni 2023
+                        </div>
+                        <div class="content-views">
+                            <i class="far fa-eye"></i> 3.987 weergaven
+                        </div>
+                    </div>
+                    <div class="content-actions">
+                        <a href="#" class="content-button primary">
+                            <i class="fas fa-book-open"></i> Lezen
+                        </a>
+                        <a href="#" class="content-button">
+                            <i class="fas fa-share-alt"></i> Delen
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Content -->
+            <div class="content-card" data-type="video">
+                <div class="content-image">
+                    <img src="https://via.placeholder.com/300x180" alt="Video thumbnail">
+                    <div class="content-type video">Video</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">Fortnite Victory Royale met Stemimitaties</h3>
+                    <p class="content-description">
+                        Ik speel Fortnite terwijl ik verschillende karakters imiteer. Kijk hoe ik een Victory Royale behaal als Batman!
+                    </p>
+                    <div class="content-meta">
+                        <div class="content-date">
+                            <i class="far fa-calendar-alt"></i> 28 mei 2023
+                        </div>
+                        <div class="content-views">
+                            <i class="far fa-eye"></i> 7.654 weergaven
+                        </div>
+                    </div>
+                    <div class="content-actions">
+                        <a href="#" class="content-button primary">
+                            <i class="fas fa-play"></i> Bekijken
+                        </a>
+                        <a href="#" class="content-button">
+                            <i class="fas fa-share-alt"></i> Delen
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stream Content -->
+            <div class="content-card" data-type="stream">
+                <div class="content-image">
+                    <img src="https://via.placeholder.com/300x180" alt="Stream thumbnail">
+                    <div class="content-type stream">Stream</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">Q&A Sessie - Vraag me alles!</h3>
+                    <p class="content-description">
+                        Een speciale stream waarin ik al jullie vragen beantwoord over stemimitaties, gaming en content creatie.
+                    </p>
+                    <div class="content-meta">
+                        <div class="content-date">
+                            <i class="far fa-calendar-alt"></i> 25 mei 2023
+                        </div>
+                        <div class="content-views">
+                            <i class="far fa-eye"></i> 4.321 weergaven
+                        </div>
+                    </div>
+                    <div class="content-actions">
+                        <a href="#" class="content-button primary">
+                            <i class="fas fa-play"></i> Bekijken
+                        </a>
+                        <a href="#" class="content-button">
+                            <i class="fas fa-share-alt"></i> Delen
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Content -->
+            <div class="content-card" data-type="post">
+                <div class="content-image">
+                    <img src="https://via.placeholder.com/300x180" alt="Post thumbnail">
+                    <div class="content-type post">Post</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">Mijn Reis als Content Creator</h3>
+                    <p class="content-description">
+                        In deze post deel ik mijn ervaringen als content creator en hoe ik ben gekomen waar ik nu ben.
+                    </p>
+                    <div class="content-meta">
+                        <div class="content-date">
+                            <i class="far fa-calendar-alt"></i> 20 mei 2023
+                        </div>
+                        <div class="content-views">
+                            <i class="far fa-eye"></i> 2.876 weergaven
+                        </div>
+                    </div>
+                    <div class="content-actions">
+                        <a href="#" class="content-button primary">
+                            <i class="fas fa-book-open"></i> Lezen
+                        </a>
+                        <a href="#" class="content-button">
+                            <i class="fas fa-share-alt"></i> Delen
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Load More Button -->
+        <button class="load-more" id="load-more">Meer Laden</button>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <div class="logo">VoiceGuy</div>
+                <p class="tagline">Gaming Community</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h3>Navigatie</h3>
+                    <a href="index.html">Home</a>
+                    <a href="live.html">Live Status</a>
+                    <a href="content.html">Content</a>
+                    <a href="chat.html">Live Chat</a>
+                    <a href="profile.html">Profiel</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <a href="login-html.html">Inloggen</a>
+                    <a href="register.html">Registreren</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Juridisch</h3>
+                    <a href="privacy.html">Privacybeleid</a>
+                    <a href="terms.html">Gebruiksvoorwaarden</a>
+                </div>
+                
+                <div class="footer-section social-links">
+                    <h3>Volg VoiceGuy</h3>
+                    <div class="social-icons">
+                        <a href="https://www.twitch.tv/voiceguy" target="_blank" class="social-icon twitch">
+                            <i class="fab fa-twitch"></i>
+                            <span>Twitch</span>
+                        </a>
+                        <a href="https://www.tiktok.com/@dutchvoiceimpressions" target="_blank" class="social-icon tiktok">
+                            <i class="fab fa-tiktok"></i>
+                            <span>TikTok</span>
+                        </a>
+                        <a href="https://www.youtube.com/c/voiceguy" target="_blank" class="social-icon youtube">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 VoiceGuy. Alle rechten voorbehouden.</p>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script src="auth-html.js"></script>
+    <script src="cookies.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Content filtering
+            const filterButtons = document.querySelectorAll('.filter-button');
+            const contentItems = document.querySelectorAll('.content-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Get filter value
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Filter content items
+                    contentItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Load more button
+            const loadMoreButton = document.getElementById('load-more');
+            let loadCount = 0;
+            
+            loadMoreButton.addEventListener('click', function() {
+                loadCount++;
+                
+                if (loadCount >= 2) {
+                    // Hide button after loading twice
+                    this.style.display = 'none';
+                    return;
+                }
+                
+                // Clone existing content items and append to grid
+                const contentGrid = document.getElementById('content-grid');
+                const existingItems = document.querySelectorAll('.content-card');
+                
+                existingItems.forEach(item => {
+                    const clone = item.cloneNode(true);
+                    contentGrid.appendChild(clone);
+                });
+                
+                // Apply current filter
+                const activeFilter = document.querySelector('.filter-button.active');
+                if (activeFilter) {
+                    const filter = activeFilter.getAttribute('data-filter');
+                    const allItems = document.querySelectorAll('.content-card');
+                    
+                    allItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+<script src="update_footer.js"></script>
+</body>
+</html>

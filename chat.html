@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat - VoiceGuy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Chat Page Styles */
+        .chat-page {
+            background-color: #121212;
+            color: white;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 200px);
+            min-height: 500px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .chat-container {
+                flex-direction: row;
+            }
+        }
+        
+        /* Chat Sidebar */
+        .chat-sidebar {
+            width: 100%;
+            background-color: #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        
+        @media (min-width: 992px) {
+            .chat-sidebar {
+                width: 300px;
+                border-right: 1px solid #3a3a3a;
+                border-bottom: none;
+            }
+        }
+        
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid #3a3a3a;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: #33cc33;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .chat-users {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .chat-user {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 5px;
+        }
+        
+        .chat-user:hover {
+            background-color: #3a3a3a;
+        }
+        
+        .chat-user.active {
+            background-color: #3a3a3a;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 3px;
+        }
+        
+        .user-status {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .user-status.online {
+            color: #33cc33;
+        }
+        
+        .user-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 5px;
+        }
+        
+        .user-badge.admin {
+            background-color: #ff33cc;
+            color: white;
+        }
+        
+        .user-badge.mod {
+            background-color: #33ccff;
+            color: white;
+        }
+        
+        /* Chat Main */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        
+        .message.received {
+            align-self: flex-start;
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+        }
+        
+        .message-content {
+            padding: 10px 15px;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .message.received .message-content {
+            background-color: #2a2a2a;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message.sent .message-content {
+            background-color: #ff33cc;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .message.received .message-sender {
+            color: #ff33cc;
+        }
+        
+        .message.sent .message-sender {
+            color: white;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .message.sent .message-time {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .message-text {
+            line-height: 1.4;
+        }
+        
+        .message-status {
+            font-size: 12px;
+            color: #aaa;
+            text-align: right;
+            margin-top: 2px;
+        }
+        
+        /* System Message */
+        .system-message {
+            text-align: center;
+            margin: 10px 0;
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        /* Chat Input */
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #3a3a3a;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: white;
+            margin-right: 10px;
+        }
+        
+        .chat-input button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff33cc;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input button:hover {
+            background-color: #e61eb3;
+        }
+        
+        .chat-input button i {
+            margin-right: 5px;
+        }
+        
+        /* Chat Info */
+        .chat-info {
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .chat-info h2 {
+            color: #ff33cc;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .chat-info p {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .chat-info ul {
+            color: #aaa;
+            padding-left: 20px;
+        }
+        
+        .chat-info li {
+            margin-bottom: 10px;
+        }
+        
+        .chat-info strong {
+            color: white;
+        }
+        
+        /* Chat Status */
+        .chat-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-indicator.online {
+            background-color: #33cc33;
+        }
+        
+        .status-indicator.offline {
+            background-color: #ff3333;
+        }
+        
+        .status-text {
+            font-weight: 600;
+        }
+        
+        .status-text.online {
+            color: #33cc33;
+        }
+        
+        .status-text.offline {
+            color: #ff3333;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body class="chat-page">
+    <!-- Header / Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">VoiceGuy</div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="menu" id="menu">
+                <a href="index.html">Home</a>
+                <a href="live.html">Live Status</a>
+                <a href="content.html">Content</a>
+                <a href="shop.html">Shop</a>
+                <a href="chat.html" class="active">Live Chat</a>
+                <a href="profile.html">Profiel</a>
+                <a href="login-html.html">Inloggen</a>
+                <a href="register.html">Registreren</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Chat Page Content -->
+    <main class="content">
+        <section class="chat-status" id="chat-status">
+            <div class="status-indicator online"></div>
+            <div class="status-text online">VoiceGuy is momenteel online en beschikbaar voor chat!</div>
+        </section>
+
+        <section class="chat-container">
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar">
+                <div class="chat-header">
+                    <div class="online-indicator"></div>
+                    <h2>Online Gebruikers (8)</h2>
+                </div>
+                <div class="chat-users">
+                    <div class="chat-user active">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="VoiceGuy">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">VoiceGuy <span class="user-badge admin">Admin</span></div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="GameFan123">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">GameFan123</div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="StreamLover">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">StreamLover <span class="user-badge mod">Mod</span></div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="TikTokFan">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">TikTokFan</div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="GamingPro">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">GamingPro</div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="DutchGamer">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">DutchGamer</div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="VoiceFan">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">VoiceFan</div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                    <div class="chat-user">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/40" alt="NewUser">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">NewUser</div>
+                            <div class="user-status online">Online</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Main -->
+            <div class="chat-main">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="system-message">
+                        Welkom bij de VoiceGuy Live Chat! Houd het gesprek vriendelijk en respectvol.
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">VoiceGuy</span>
+                            <span class="message-time">14:30</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Hoi allemaal! Welkom bij de chat. Ik ben hier om jullie vragen te beantwoorden!</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">GameFan123</span>
+                            <span class="message-time">14:32</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Hoi VoiceGuy! Wanneer is je volgende stream?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">VoiceGuy</span>
+                            <span class="message-time">14:33</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Ik ga morgen streamen om 19:00! We gaan Elden Ring spelen.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">TikTokFan</span>
+                            <span class="message-time">14:35</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Kun je de Darth Vader stem doen in je volgende TikTok?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">VoiceGuy</span>
+                            <span class="message-time">14:36</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Zeker! Ik zal binnenkort een nieuwe TikTok maken met Darth Vader. "I find your lack of faith disturbing..." 😈</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message sent">
+                        <div class="message-header">
+                            <span class="message-sender">Jij</span>
+                            <span class="message-time">14:38</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Hoi VoiceGuy! Ik ben een grote fan van je content!</div>
+                        </div>
+                        <div class="message-status">Verzonden</div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">VoiceGuy</span>
+                            <span class="message-time">14:39</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Dankjewel! Leuk dat je er bent! 😊</div>
+                        </div>
+                    </div>
+                    
+                    <div class="system-message">
+                        StreamLover is toegetreden tot de chat.
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">StreamLover</span>
+                            <span class="message-time">14:41</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Hoi allemaal! Heb ik iets gemist?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message received">
+                        <div class="message-header">
+                            <span class="message-sender">VoiceGuy</span>
+                            <span class="message-time">14:42</span>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-text">Hoi StreamLover! We waren net aan het praten over de stream van morgen. Ik ga Elden Ring spelen om 19:00.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Typ een bericht...">
+                    <button id="send-button"><i class="fas fa-paper-plane"></i> Versturen</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="chat-info">
+            <h2>Chat Regels & Informatie</h2>
+            <p>Welkom bij de VoiceGuy Live Chat! Hier kun je direct communiceren met VoiceGuy en andere community leden. Om ervoor te zorgen dat iedereen een prettige ervaring heeft, vragen we je om de volgende regels te respecteren:</p>
+            <ul>
+                <li><strong>Wees respectvol</strong> - Behandel anderen met respect en vriendelijkheid.</li>
+                <li><strong>Geen spam</strong> - Vermijd het herhaaldelijk versturen van dezelfde berichten.</li>
+                <li><strong>Geen reclame</strong> - Promoot geen andere kanalen of diensten zonder toestemming.</li>
+                <li><strong>Houd het netjes</strong> - Gebruik geen grove taal of ongepaste inhoud.</li>
+                <li><strong>Luister naar moderators</strong> - Volg de aanwijzingen van moderators op.</li>
+            </ul>
+            <p>VoiceGuy is meestal online tussen 19:00 en 22:00 uur. Als hij niet beschikbaar is, kun je alsnog chatten met andere community leden of een bericht achterlaten dat later beantwoord zal worden.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <div class="logo">VoiceGuy</div>
+                <p class="tagline">Gaming Community</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h3>Navigatie</h3>
+                    <a href="index.html">Home</a>
+                    <a href="live.html">Live Status</a>
+                    <a href="content.html">Content</a>
+                    <a href="chat.html">Live Chat</a>
+                    <a href="profile.html">Profiel</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <a href="login-html.html">Inloggen</a>
+                    <a href="register.html">Registreren</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Juridisch</h3>
+                    <a href="privacy.html">Privacybeleid</a>
+                    <a href="terms.html">Gebruiksvoorwaarden</a>
+                </div>
+                
+                <div class="footer-section social-links">
+                    <h3>Volg VoiceGuy</h3>
+                    <div class="social-icons">
+                        <a href="https://www.twitch.tv/voiceguy" target="_blank" class="social-icon twitch">
+                            <i class="fab fa-twitch"></i>
+                            <span>Twitch</span>
+                        </a>
+                        <a href="https://www.tiktok.com/@dutchvoiceimpressions" target="_blank" class="social-icon tiktok">
+                            <i class="fab fa-tiktok"></i>
+                            <span>TikTok</span>
+                        </a>
+                        <a href="https://www.youtube.com/c/voiceguy" target="_blank" class="social-icon youtube">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 VoiceGuy. Alle rechten voorbehouden.</p>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script src="auth-html.js"></script>
+    <script src="cookies.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const chatMessages = document.getElementById('chat-messages');
+            
+            // Check if user is logged in
+            const isLoggedIn = localStorage.getItem('voiceguy_logged_in') === 'true';
+            const username = localStorage.getItem('voiceguy_username') || 'Gast';
+            
+            // Update login/logout links
+            const loginLink = document.querySelector('a[href="login-html.html"]');
+            const registerLink = document.querySelector('a[href="register.html"]');
+            
+            if (isLoggedIn) {
+                // Add logout link if logged in
+                loginLink.textContent = 'Uitloggen';
+                loginLink.href = '#';
+                loginLink.id = 'logout-link';
+                registerLink.style.display = 'none';
+                
+                // Add logout functionality
+                loginLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Clear login info
+                    localStorage.removeItem('voiceguy_logged_in');
+                    localStorage.removeItem('voiceguy_username');
+                    
+                    // Add system message about logout
+                    const systemMessage = document.createElement('div');
+                    systemMessage.className = 'system-message';
+                    systemMessage.textContent = `Je bent uitgelogd.`;
+                    chatMessages.appendChild(systemMessage);
+                    
+                    // Redirect to home page
+                    window.location.href = 'index.html';
+                });
+                
+                // Add system message about login
+                const systemMessage = document.createElement('div');
+                systemMessage.className = 'system-message';
+                systemMessage.textContent = `Je bent ingelogd als ${username}.`;
+                chatMessages.appendChild(systemMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Load chat history from localStorage
+            loadChatHistory();
+            
+            // Function to save chat history to localStorage
+            function saveChatHistory() {
+                const chatHistory = [];
+                const messageElements = chatMessages.querySelectorAll('.message, .system-message');
+                
+                messageElements.forEach(element => {
+                    if (element.classList.contains('system-message')) {
+                        chatHistory.push({
+                            type: 'system',
+                            text: element.textContent
+                        });
+                    } else {
+                        const sender = element.querySelector('.message-sender').textContent;
+                        const time = element.querySelector('.message-time').textContent;
+                        const text = element.querySelector('.message-text').textContent;
+                        const isSent = element.classList.contains('sent');
+                        
+                        chatHistory.push({
+                            type: 'message',
+                            sender,
+                            time,
+                            text,
+                            isSent
+                        });
+                    }
+                });
+                
+                localStorage.setItem('voiceguy_chat_history', JSON.stringify(chatHistory));
+            }
+            
+            // Function to load chat history from localStorage
+            function loadChatHistory() {
+                const chatHistory = localStorage.getItem('voiceguy_chat_history');
+                
+                if (chatHistory) {
+                    const messages = JSON.parse(chatHistory);
+                    
+                    // Clear current messages
+                    chatMessages.innerHTML = '';
+                    
+                    // Add messages from history
+                    messages.forEach(message => {
+                        if (message.type === 'system') {
+                            const systemMessage = document.createElement('div');
+                            systemMessage.className = 'system-message';
+                            systemMessage.textContent = message.text;
+                            chatMessages.appendChild(systemMessage);
+                        } else {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = message.isSent ? 'message sent' : 'message received';
+                            
+                            messageDiv.innerHTML = `
+                                <div class="message-header">
+                                    <span class="message-sender">${message.sender}</span>
+                                    <span class="message-time">${message.time}</span>
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-text">${message.text}</div>
+                                </div>
+                                ${message.isSent ? '<div class="message-status">Verzonden</div>' : ''}
+                            `;
+                            
+                            chatMessages.appendChild(messageDiv);
+                        }
+                    });
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+            
+            // Function to add a new message
+            function addMessage(sender, text, isSent = false) {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const timeString = `${hours}:${minutes}`;
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isSent ? 'message sent' : 'message received';
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <span class="message-sender">${sender}</span>
+                        <span class="message-time">${timeString}</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">${text}</div>
+                    </div>
+                    ${isSent ? '<div class="message-status">Verzonden</div>' : ''}
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Save chat history
+                saveChatHistory();
+            }
+            
+            // Function to add a system message
+            function addSystemMessage(text) {
+                const systemMessage = document.createElement('div');
+                systemMessage.className = 'system-message';
+                systemMessage.textContent = text;
+                
+                chatMessages.appendChild(systemMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Save chat history
+                saveChatHistory();
+            }
+            
+            // Function to handle sending a message
+            function sendMessage() {
+                const text = messageInput.value.trim();
+                
+                if (text) {
+                    // Get sender name based on login status
+                    const senderName = isLoggedIn ? username : 'Gast';
+                    
+                    // Add user message
+                    addMessage(senderName, text, true);
+                    
+                    // Clear input
+                    messageInput.value = '';
+                    
+                    // Check for special commands
+                    if (text.toLowerCase().startsWith('/clear')) {
+                        // Clear chat history
+                        chatMessages.innerHTML = '';
+                        addSystemMessage('Chat geschiedenis is gewist.');
+                        return;
+                    }
+                    
+                    // Generate smart response based on message content
+                    let response = generateSmartResponse(text);
+                    
+                    // Simulate VoiceGuy response after a delay
+                    setTimeout(() => {
+                        addMessage('VoiceGuy', response);
+                    }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+                }
+            }
+            
+            // Function to generate smart responses based on message content
+            function generateSmartResponse(message) {
+                message = message.toLowerCase();
+                
+                // Check for greetings
+                if (message.includes('hoi') || message.includes('hallo') || message.includes('hey') || message.includes('hi')) {
+                    return `Hoi ${isLoggedIn ? username : 'daar'}! Leuk dat je er bent! 👋`;
+                }
+                
+                // Check for questions about streaming
+                if (message.includes('stream') || message.includes('live')) {
+                    if (message.includes('wanneer') || message.includes('volgende') || message.includes('planning')) {
+                        return "Ik ga morgen streamen om 19:00! We gaan Elden Ring spelen. Mis het niet! 🎮";
+                    }
+                    return "Ik stream meestal op dinsdag, donderdag en zaterdag vanaf 19:00. Kom gezellig kijken! 📺";
+                }
+                
+                // Check for questions about voice impressions
+                if (message.includes('stem') || message.includes('imitatie') || message.includes('impressie')) {
+                    return "Ik kan meer dan 50 verschillende stemmen imiteren! Mijn specialiteiten zijn filmkarakters en gamepersonages. Heb je een specifiek verzoek? 🎭";
+                }
+                
+                // Check for compliments
+                if (message.includes('geweldig') || message.includes('goed') || message.includes('leuk') || message.includes('cool') || message.includes('top')) {
+                    return "Dankjewel voor je lieve woorden! Dat betekent veel voor me! ❤️";
+                }
+                
+                // Check for questions about games
+                if (message.includes('game') || message.includes('spel') || message.includes('elden ring') || message.includes('minecraft')) {
+                    return "Momenteel speel ik vooral Elden Ring en Minecraft. Maar ik ben altijd open voor suggesties! Welke games speel jij graag? 🎮";
+                }
+                
+                // Check for questions about social media
+                if (message.includes('youtube') || message.includes('twitch') || message.includes('tiktok')) {
+                    return "Je kunt me volgen op YouTube, Twitch en TikTok! Alle links staan onderaan de pagina. Ik post dagelijks nieuwe content! 📱";
+                }
+                
+                // Default responses
+                const defaultResponses = [
+                    "Dat is een interessante gedachte! Vertel me meer.",
+                    "Bedankt voor je bericht! Ik waardeer je input.",
+                    "Leuk dat je contact opneemt! Hoe gaat het met je?",
+                    "Dat is een goed punt! Ik zal erover nadenken.",
+                    "Ik vind het altijd leuk om met fans te chatten! Dankjewel voor je steun.",
+                    "Dat klinkt goed! Heb je nog andere ideeën?",
+                    "Ik waardeer je feedback enorm! Het helpt me om betere content te maken.",
+                    "Interessant! Ik ga dat zeker proberen in mijn volgende stream.",
+                    "Dankjewel voor het delen! Ik vind het altijd leuk om nieuwe ideeën te horen."
+                ];
+                
+                return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+            }
+            
+            // Send message on button click
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Send message on Enter key
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Simulate user joining chat occasionally
+            setInterval(() => {
+                const randomUsers = ['FanGirl42', 'GamerDude', 'VoiceEnthusiast', 'StreamViewer', 'DutchFan', 'ImitationLover'];
+                const randomUser = randomUsers[Math.floor(Math.random() * randomUsers.length)];
+                
+                // 10% chance of a new user joining
+                if (Math.random() < 0.1) {
+                    addSystemMessage(`${randomUser} is toegetreden tot de chat.`);
+                    
+                    // 50% chance of the new user sending a message
+                    if (Math.random() < 0.5) {
+                        setTimeout(() => {
+                            const userMessages = [
+                                "Hoi allemaal! Wat heb ik gemist?",
+                                "Hoi VoiceGuy! Grote fan hier!",
+                                "Is de stream van morgen nog steeds om 19:00?",
+                                "Ik kijk uit naar je volgende video!",
+                                "Welke game speel je momenteel het meest?",
+                                "Hoi iedereen! Leuk om hier te zijn!"
+                            ];
+                            
+                            const randomMessage = userMessages[Math.floor(Math.random() * userMessages.length)];
+                            addMessage(randomUser, randomMessage);
+                            
+                            // VoiceGuy responds to the new user
+                            setTimeout(() => {
+                                const welcomeResponses = [
+                                    `Welkom ${randomUser}! Leuk dat je er bent!`,
+                                    `Hoi ${randomUser}! Welkom in de chat!`,
+                                    `${randomUser}! Goed om je te zien!`,
+                                    `Welkom ${randomUser}! We waren net aan het praten over de stream van morgen.`
+                                ];
+                                
+                                const randomWelcome = welcomeResponses[Math.floor(Math.random() * welcomeResponses.length)];
+                                addMessage('VoiceGuy', randomWelcome);
+                            }, 1000 + Math.random() * 2000);
+                        }, 1000 + Math.random() * 1000);
+                    }
+                }
+            }, 30000); // Check every 30 seconds
+            
+            // Update chat status based on time of day or manual override
+            function updateChatStatus() {
+                const now = new Date();
+                const hours = now.getHours();
+                const chatStatus = document.getElementById('chat-status');
+                
+                // Check for manual override
+                const storedStatus = localStorage.getItem('manualLiveOverride');
+                if (storedStatus) {
+                    const status = JSON.parse(storedStatus);
+                    if (status.isLive) {
+                        chatStatus.innerHTML = `
+                            <div class="status-indicator online"></div>
+                            <div class="status-text online">VoiceGuy is momenteel online en beschikbaar voor chat!</div>
+                        `;
+                        return;
+                    } else {
+                        chatStatus.innerHTML = `
+                            <div class="status-indicator offline"></div>
+                            <div class="status-text offline">VoiceGuy is momenteel offline. Je kunt nog steeds berichten achterlaten!</div>
+                        `;
+                        return;
+                    }
+                }
+                
+                // VoiceGuy is online between 19:00 and 22:00
+                if (hours >= 19 && hours < 22) {
+                    chatStatus.innerHTML = `
+                        <div class="status-indicator online"></div>
+                        <div class="status-text online">VoiceGuy is momenteel online en beschikbaar voor chat!</div>
+                    `;
+                } else {
+                    chatStatus.innerHTML = `
+                        <div class="status-indicator offline"></div>
+                        <div class="status-text offline">VoiceGuy is momenteel offline. Je kunt nog steeds berichten achterlaten!</div>
+                    `;
+                }
+            }
+            
+            // Update status initially and every minute
+            updateChatStatus();
+            setInterval(updateChatStatus, 60000);
+            
+            // Add chat commands help
+            const chatInfo = document.querySelector('.chat-info');
+            const commandsSection = document.createElement('div');
+            commandsSection.innerHTML = `
+                <h3>Chat Commando's</h3>
+                <ul>
+                    <li><strong>/clear</strong> - Wis de chat geschiedenis</li>
+                </ul>
+            `;
+            chatInfo.appendChild(commandsSection);
+        });
+    </script>
+<script src="update_footer.js"></script>
+</body>
+</html>

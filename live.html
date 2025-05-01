@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Status - VoiceGuy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Font Awesome icons -->
+</head>
+<body class="live-page">
+    <!-- Header / Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">VoiceGuy</div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="menu" id="menu">
+                <a href="index.html">Home</a>
+                <a href="live.html" class="active">Live Status</a>
+                <a href="content.html">Content</a>
+                <a href="shop.html">Shop</a>
+                <a href="chat.html">Live Chat</a>
+                <a href="profile.html">Profiel</a>
+                <a href="login-html.html">Inloggen</a>
+                <a href="register.html">Registreren</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Live Status Content -->
+    <main class="content">
+        <section class="live-status">
+            <h1>Live Status van VoiceGuy</h1>
+            
+            <div id="live-status" class="live-status-message checking">
+                <div class="live-indicator">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Status controleren...
+                </div>
+                <p>Even geduld terwijl we controleren of VoiceGuy live is...</p>
+            </div>
+            
+            <div id="tiktok-embed-container" class="stream-embed">
+                <!-- TikTok embed wordt hier geladen als je live bent -->
+            </div>
+            
+            <div class="platform-buttons">
+                <a href="https://www.tiktok.com/@dutchvoiceimpressions" class="platform-button tiktok" target="_blank">
+                    <i class="fab fa-tiktok"></i>
+                    Volg op TikTok
+                </a>
+                <a href="https://www.twitch.tv/voiceguy" class="platform-button twitch" target="_blank">
+                    <i class="fab fa-twitch"></i>
+                    Volg op Twitch
+                </a>
+                <a href="https://www.youtube.com/c/voiceguy" class="platform-button youtube" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                    Volg op YouTube
+                </a>
+            </div>
+            
+            <button id="refresh-status" class="refresh-button">
+                <i class="fas fa-sync-alt"></i>
+                Status verversen
+            </button>
+            
+            <!-- Handmatige override voor live status (alleen zichtbaar voor beheerders) -->
+            <div id="admin-controls" class="admin-controls">
+                <button id="toggle-live" class="admin-button">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <span>Live status handmatig instellen</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container compact-footer">
+            <div class="footer-logo">
+                <div class="logo">VoiceGuy</div>
+                <p class="tagline">Gaming Community</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h3>Navigatie</h3>
+                    <a href="index.html">Home</a>
+                    <a href="live.html">Live Status</a>
+                    <a href="content.html">Content</a>
+                    <a href="shop.html">Shop</a>
+                    <a href="chat.html">Live Chat</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <a href="login-html.html">Inloggen</a>
+                    <a href="register.html">Registreren</a>
+                    <a href="profile.html">Profiel</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Juridisch</h3>
+                    <a href="privacy.html">Privacybeleid</a>
+                    <a href="terms.html">Gebruiksvoorwaarden</a>
+                </div>
+                
+                <div class="footer-section compact">
+                    <h3>Gaming Community</h3>
+                    <p class="compact-text">VoiceGuy's inclusieve gaming community voor streams & events.</p>
+                    <a href="chat.html">Join ons</a>
+                </div>
+                
+                <div class="footer-section social-links">
+                    <h3>Volg VoiceGuy</h3>
+                    <div class="social-icons">
+                        <a href="https://www.twitch.tv/voiceguy" target="_blank" class="social-icon twitch">
+                            <i class="fab fa-twitch"></i>
+                            <span>Twitch</span>
+                        </a>
+                        <a href="https://www.tiktok.com/@voiceguy" target="_blank" class="social-icon tiktok">
+                            <i class="fab fa-tiktok"></i>
+                            <span>TikTok</span>
+                        </a>
+                        <a href="https://www.youtube.com/c/voiceguy" target="_blank" class="social-icon youtube">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 VoiceGuy. Alle rechten voorbehouden.</p>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script src="auth-html.js"></script>
+    <script src="cookies.js"></script>
+<script src="update_footer.js"></script>
+</body>
+</html>
+

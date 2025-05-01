@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registreren - VoiceGuy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Font Awesome icons -->
+</head>
+<body class="auth-page">
+    <!-- Header / Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">VoiceGuy</div>
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="menu" id="menu">
+                <a href="index.html">Home</a>
+                <a href="live.html">Live Status</a>
+                <a href="content.html">Content</a>
+                <a href="shop.html">Shop</a>
+                <a href="chat.html">Live Chat</a>
+                <a href="profile.html">Profiel</a>
+                <a href="login-html.html">Inloggen</a>
+                <a href="register.html" class="active">Registreren</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Register Form -->
+    <main class="content">
+        <section class="form-container">
+            <h1>Registreren</h1>
+            <form action="#" method="POST" class="form">
+                <div class="input-group">
+                    <label for="username">Gebruikersnaam</label>
+                    <input type="text" id="username" name="username" placeholder="Kies een gebruikersnaam" required>
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="Voer je e-mailadres in" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="input-group">
+                    <label for="password">Wachtwoord</label>
+                    <input type="password" id="password" name="password" placeholder="Kies een sterk wachtwoord" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Bevestig Wachtwoord</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Bevestig je wachtwoord" required>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <button type="submit" class="cta-button">Account Aanmaken</button>
+            </form>
+            <div class="form-footer">
+                Heb je al een account? <a href="login.html">Log hier in</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <div class="logo">VoiceGuy</div>
+                <p class="tagline">Gaming Community</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h3>Navigatie</h3>
+                    <a href="index.html">Home</a>
+                    <a href="live.html">Live Status</a>
+                    <a href="content.html">Content</a>
+                    <a href="chat.html">Live Chat</a>
+                    <a href="profile.html">Profiel</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <a href="login-html.html">Inloggen</a>
+                    <a href="register.html">Registreren</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Juridisch</h3>
+                    <a href="privacy.html">Privacybeleid</a>
+                    <a href="terms.html">Gebruiksvoorwaarden</a>
+                </div>
+                
+                <div class="footer-section social-links">
+                    <h3>Volg VoiceGuy</h3>
+                    <div class="social-icons">
+                        <a href="https://www.twitch.tv/voiceguy" target="_blank" class="social-icon twitch">
+                            <i class="fab fa-twitch"></i>
+                            <span>Twitch</span>
+                        </a>
+                        <a href="https://www.tiktok.com/@voiceguy" target="_blank" class="social-icon tiktok">
+                            <i class="fab fa-tiktok"></i>
+                            <span>TikTok</span>
+                        </a>
+                        <a href="https://www.youtube.com/c/voiceguy" target="_blank" class="social-icon youtube">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 VoiceGuy. Alle rechten voorbehouden.</p>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script src="auth-html.js"></script>
+    <script src="cookies.js"></script>
+<script src="update_footer.js"></script>
+</body>
+</html>
+
